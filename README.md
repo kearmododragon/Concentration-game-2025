@@ -14,7 +14,7 @@ Game won when all cards face up
 Game over when timer expires.
 
 Ice box
-- Choose varying numbers of cards to increese difficulty
+- Choose varying numbers of cards to increase difficulty
 - themed cards/background 
 - music
 - random bonus for completing a specific task 
