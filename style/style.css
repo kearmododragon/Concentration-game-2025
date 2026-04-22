@@ -3,37 +3,176 @@
     gap: 10px;
     margin: 20px auto;
     width: fit-content;
-    /*border: 2px solid red;*/
 }
-
 .card {
     width: 80px;
-    height: 80px;
-    background: gray;
+    height: 100px;
+    background-image: url("../imgs/card_back.png");
+    background-size: cover;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 24px;
 }
-
+.card.flipped{
+    background-image: none;
+    background-color: rgba(38, 75, 125);
+    color: red;
+    font-size: 42px;
+    font-weight: bold;
+}
+body{
+    margin: 0;
+    background-color: #1b1f2e;
+    font-family: Arial, Helvetica, sans-serif;
+}
 #homePage {
-    background-color: black;
-    color: beige;
-        visibility: visible;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    background-color: #141826;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
+#homePage h1 {
+    color: #ffffff;
+    font-size: 36px;
+    margin: 0;
+}
+#homePage h2 {
+    color: #b8bfd6;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+}
+#difficulty-select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
 
+    background-color: #2b3044;
+    color: #ffffff;
+
+    font-size: 16px;
+    cursor: pointer;
+}
 #gamePage {
-    background-color: brown;
+    background-image: url("../imgs/green_background.jpg");
     color: aquamarine;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-
 #endGame {
-    background-color: blue;
-    color: aliceblue;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    background-color: #141826;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
-
 .hidden {
     display: none !important;
     pointer-events: none;
+}
+#game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    font-size: 24px;
+    font-weight: bold;
+    color: pink;
+}
+#start-btn {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff7576;
+  background-color: #2B3044;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 12px 24px;
+  position: relative;
+  line-height: 24px;
+  border-radius: 9px;
+  box-shadow: 0px 1px 2px #2B3044,
+    0px 4px 16px #2B3044;
+  transform-style: preserve-3d;
+  transform: scale(var(--s, 1)) perspective(600px)
+    rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  perspective: 600px;
+  transition: transform 0.1s;
+}
+.sp {
+  background: linear-gradient(
+      90deg,
+      #866ee7,
+      #ea60da,
+      #ed8f57,
+      #fbd41d,
+      #2cca91
+    );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  display: block;
+}
+#start-btn:active {
+  transition: 0.3s;
+  transform: scale(0.93);
+}
+#play-again {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff7576;
+  background-color: #2B3044;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 12px 24px;
+  position: relative;
+  line-height: 24px;
+  border-radius: 9px;
+  box-shadow: 0px 1px 2px #2B3044,
+    0px 4px 16px #2B3044;
+  transform-style: preserve-3d;
+  transform: scale(var(--s, 1)) perspective(600px)
+    rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  perspective: 600px;
+  transition: transform 0.1s;
+}
+#play-again:active {
+  transition: 0.3s;
+  transform: scale(0.93);
+}
+#endGame h2 {
+    color: #ffffff;
+    font-size: 36px;
+    margin: 0;
+}
+#scoreText{ 
+    color: #b8bfd6;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
 }

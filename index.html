@@ -11,27 +11,31 @@
 
 <body>
     <div id="homePage">
-    <h1>Welcome to my Concentration game.</h1>
-    <h2>flip the cards over in the least attempts/fastest time to win!</h2>
-    <label for="difficulty-select" Choose difficulty:></label>
-    <select id="difficulty-select">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-    </select>
-    <button id="start-btn">Start Game</button>
+        <h1>Welcome to my Concentration game.</h1>
+        <h2>Flip the cards over in the least attempts to win!</h2>
+        <label for="difficulty-select" Choose difficulty:></label>
+        <select id="difficulty-select">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value = "endless">Endless</option>
+        </select>
+        <button id="start-btn" class="start-btn"><span class="sp">Play Game</span></button>
     </div>
 
     <div id="gamePage" class="hidden">
-    <h2> game page</h2>
-    <h3>render a new page rather than replacing/hiding like done before.timer at the bottom right, score bottom left</h3>
-    <div id="game-board"></div>
+        <div id="game-board"></div>
+        <div id="game-info">
+        <div id="lives"> Lives: 0</div>
+        <div id="timer"> Time: </div>
+        </div>
     </div>
 
     <div id="endGame" class="hidden">
-    <h2>game over/game win</h2>
-    <h3> score rendered (right answers * time or clicks), <button id="play-again">play again</button> <- takes you back to home
-            screen</h3>
+        <h2 id="gameOverText">game over/game win</h2>
+        <p id="scoreText"> score rendered (right answers * time or clicks), </p>
+        <button id="play-again"><span class="sp">Play Again?</span></button>
     </div>
 </body>
+
 </html>
