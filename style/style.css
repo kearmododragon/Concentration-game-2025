@@ -16,3 +16,24 @@
     cursor: pointer;
     font-size: 24px;
 }
+
+#homePage {
+    background-color: black;
+    color: beige;
+        visibility: visible;
+}
+
+#gamePage {
+    background-color: brown;
+    color: aquamarine;
+}
+
+#endGame {
+    background-color: blue;
+    color: aliceblue;
+}
+
+.hidden {
+    display: none !important;
+    pointer-events: none;
+}
