@@ -20,3 +20,4 @@ Ice box
 - random bonus for completing a specific task 
     - task: correct on first try, complete specific set next
     - reward: pause timer, reset timer, flash all cards, one card permanently up
+- continuous mode, where you have a set amount of lives and the number of cards keeps increasing

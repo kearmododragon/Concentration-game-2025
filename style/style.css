@@ -1,0 +1,18 @@
+#game-board {
+    display: grid;
+    gap: 10px;
+    margin: 20px auto;
+    width: fit-content;
+    /*border: 2px solid red;*/
+}
+
+.card {
+    width: 80px;
+    height: 80px;
+    background: gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+}
