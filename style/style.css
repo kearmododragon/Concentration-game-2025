@@ -1,3 +1,23 @@
+@keyframes rainbowGlow {
+    0% {
+        box-shadow: 0 0 10px red;
+    }
+    20% {
+        box-shadow: 0 0 15px orange;
+    }
+    40% {
+        box-shadow: 0 0 20px yellow;
+    }
+    60% {
+        box-shadow: 0 0 20px green;
+    }
+    80% {
+        box-shadow: 0 0 20px blue;
+    }
+    100% {
+        box-shadow: 0 0 10px purple;
+    }
+}
 #game-board {
     display: grid;
     gap: 10px;
@@ -189,4 +209,8 @@ body{
 }
 #specialPairCard {
     margin: 0 auto;
+}
+.special-glow {
+    animation: rainbowGlow 1s infinite;
+    transform: scale(1.05);
 }

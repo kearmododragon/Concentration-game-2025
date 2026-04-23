@@ -26,6 +26,8 @@ const gameState = {
     firstGuess: true,
     specialPair: null,
     timerPaused: false,
+    specialActive: false,
+    specialFound: false,
 }
 let firstCard = null;
 let secondCard = null;
@@ -42,6 +44,7 @@ function startGame() {
     gameState.firstGuess = true;
     gameState.difficulty = difficultySelect.value
     gameState.timeElapsed = 0;
+    resetSpecialPairUI()
     if (gameState.difficulty === "easy") gameState.gridSize = 2;
     if (gameState.difficulty === "medium") gameState.gridSize = 4;
     if (gameState.difficulty === "hard") gameState.gridSize = 6;
@@ -88,6 +91,7 @@ function restart() {
     gameState.endlessMatchedPairs = 0;
     gameBoard.innerHTML = "";
     showHomePage()
+    resetSpecialPairUI()
 };
 function createBoard(deck) {
     gameBoard.innerHTML = "";
@@ -134,6 +138,13 @@ function handleCardClick(e) {
     if (card === firstCard) return;
 
     revealCard(card);
+    if (card.dataset.value === gameState.specialPair) {
+        gameState.specialActive = true;
+    } else {
+        gameState.specialActive = false;
+    }
+
+    updateSpecialGlow();
 
     if (!firstCard) {
         firstCard = card;
@@ -159,11 +170,18 @@ function checkMatch() {
             gameState.lives += 5;
             updateLivesDisplay();
         }
+
         gameState.firstGuess = false;
+
         if (value1 === gameState.specialPair) {
             triggerTimeFreeze();
+            gameState.specialFound = true;
+            gameState.specialActive = false;
+            updateSpecialGlow();
         }
+
         disableCards();
+
     } else {
         gameState.firstGuess = false;
         unflipCards();
@@ -218,6 +236,7 @@ function checkWin() {
                 setSpecialPairFromDeck(deck);
                 resetBoard();
                 updateLivesDisplay();
+                resetSpecialPairUI()
             }, 1000)
         } else {
             setTimeout(() => {
@@ -260,12 +279,14 @@ function updateLivesDisplay() {
     livesTextEl.textContent = `Lives left: ${gameState.lives}`;
 }
 function startTimer() {
+    clearInterval(gameState.timerId);
+
     updateTimerDisplay();
 
     gameState.timerId = setInterval(() => {
         gameState.timeElapsed++;
         updateTimerDisplay();
-    }, 1000)
+    }, 1000);
 }
 function updateTimerDisplay() {
     timerEl.textContent = `Time: ${gameState.timeElapsed}s`;
@@ -302,4 +323,22 @@ function setSpecialPairFromDeck(deck) {
 
     specialPairCard.classList.add("flipped");
     specialPairCard.textContent = gameState.specialPair;
+}
+function updateSpecialGlow() {
+    if (gameState.specialFound) {
+        specialPairCard.classList.add("special-glow");
+        return;
+    }
+
+    if (gameState.specialActive) {
+        specialPairCard.classList.add("special-glow");
+    } else {
+        specialPairCard.classList.remove("special-glow");
+    }
+}
+function resetSpecialPairUI() {
+    gameState.specialActive = false;
+    gameState.specialFound = false;
+
+    specialPairCard.classList.remove("special-glow");
 }
