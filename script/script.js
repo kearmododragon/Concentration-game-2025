@@ -6,79 +6,88 @@ const livesTextEl = document.getElementById("lives");
 const gameOverText = document.getElementById("gameOverText");
 const scoreText = document.getElementById("scoreText");
 const timerEl = document.getElementById("timer");
+const specialPairCard = document.getElementById("specialPairCard")
 
 const home = document.getElementById("homePage");
 const game = document.getElementById("gamePage");
 const end = document.getElementById("endGame");
 
-
+const gameState = {
+    difficulty: "",
+    gridSize: 0,
+    lives: 0,
+    timeElapsed: 0,
+    timerId: null,
+    matchedPairs: 0,
+    totalPairs: 0,
+    endlessMode: false,
+    endlessMatchedPairs: 0,
+    score: 0,
+    firstGuess: true,
+    specialPair: null,
+    timerPaused: false,
+}
 let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
-let totalPairs = 0;
-let matchedPairs = 0;
-let lives = 0;
-let timeElapsed = 0;
-let timerId = null;
-let score = 0;
-let currentLevel = 1;
-let difficulty = "";
-let gridSize = 0;
-let endlessMatchedPairs = 0;
+
+
 
 startBtn.addEventListener("click", startGame);
 playAgain.addEventListener("click", restart)
 
 function startGame() {
-    difficulty = difficultySelect.value
-
-    if (difficulty === "easy") gridSize = 2;
-    if (difficulty === "medium") gridSize = 4;
-    if (difficulty === "hard") gridSize = 6;
-    if (difficulty === "endless"){
-        endlessMode = true;
-        gridSize = 2;
-        lives = 20;
+    gameState.endlessMode = false;
+    gameState.endlessMatchedPairs = 0
+    gameState.firstGuess = true;
+    gameState.difficulty = difficultySelect.value
+    gameState.timeElapsed = 0;
+    if (gameState.difficulty === "easy") gameState.gridSize = 2;
+    if (gameState.difficulty === "medium") gameState.gridSize = 4;
+    if (gameState.difficulty === "hard") gameState.gridSize = 6;
+    if (gameState.difficulty === "endless") {
+        gameState.endlessMode = true;
+        gameState.gridSize = 2;
+        gameState.lives = 20;
+        if (!gameState.specialPair) {
+            const pairs = [...new Set(createShuffledDeck(4))];
+            gameState.specialPair = pairs[Math.floor(Math.random() * pairs.length)]
+        }
     } else {
-        lives = gridSize*5;
+        gameState.lives = gameState.gridSize * 5;
     }
-    difficulty=difficultySelect.value
-    const numCards = gridSize * gridSize;
+    const numCards = gameState.gridSize * gameState.gridSize;
 
-    totalPairs = numCards / 2;
-    matchedPairs = 0;
+    gameState.totalPairs = numCards / 2;
+    gameState.matchedPairs = 0;
 
-    gameBoard.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`
+    gameBoard.style.gridTemplateColumns = `repeat(${gameState.gridSize}, 80px)`
 
     const deck = createShuffledDeck(numCards);
 
     createBoard(deck);
-
-    home.classList.add("hidden")
-    game.classList.remove("hidden")
-    end.classList.add("hidden")
+    setSpecialPairFromDeck(deck);
+    showGamePage()
     startTimer()
     updateLivesDisplay()
-    console.log(lives)
+    console.log(gameState.lives)
 };
 function restart() {
     console.log("play again")
-    clearInterval(timerId);
+    clearInterval(gameState.timerId);
     firstCard = null;
     secondCard = null;
     lockBoard = false;
-    matchedPairs = 0;
-    totalPairs = 0;
-    lives = 0;
-    timeElapsed = 0;
-    score = 0;
-    endlessMode = false;
-    currentLevel = 1;
-    gridSize = 0;
+    gameState.matchedPairs = 0;
+    gameState.totalPairs = 0;
+    gameState.lives = 0;
+    gameState.timeElapsed = 0;
+    gameState.score = 0;
+    gameState.endlessMode = false;
+    gameState.gridSize = 0;
+    gameState.endlessMatchedPairs = 0;
     gameBoard.innerHTML = "";
-    home.classList.remove("hidden")
-    game.classList.add("hidden")
-    end.classList.add("hidden")
+    showHomePage()
 };
 function createBoard(deck) {
     gameBoard.innerHTML = "";
@@ -140,22 +149,33 @@ function revealCard(card) {
     card.textContent = card.dataset.value;
 }
 function checkMatch() {
-    const isMatch = firstCard.dataset.value === secondCard.dataset.value;
+    const value1 = firstCard.dataset.value;
+    const value2 = secondCard.dataset.value;
+
+    const isMatch = value1 === value2;
 
     if (isMatch) {
+        if (gameState.firstGuess) {
+            gameState.lives += 5;
+            updateLivesDisplay();
+        }
+        gameState.firstGuess = false;
+        if (value1 === gameState.specialPair) {
+            triggerTimeFreeze();
+        }
         disableCards();
     } else {
+        gameState.firstGuess = false;
         unflipCards();
     }
-    updateLivesDisplay()
 }
 function disableCards() {
     firstCard.removeEventListener("click", handleCardClick);
     secondCard.removeEventListener("click", handleCardClick);
 
-    matchedPairs++;
-    if (difficulty === "endless") {
-        endlessMatchedPairs++;
+    gameState.matchedPairs++;
+    if (gameState.endlessMode) {
+        gameState.endlessMatchedPairs++;
     }
     checkWin();
 
@@ -172,7 +192,7 @@ function unflipCards() {
         secondCard.textContent = "";
 
         resetBoard();
-        lives--
+        gameState.lives--;
         updateLivesDisplay();
         checkLose();
     }, 1000);
@@ -182,74 +202,104 @@ function resetBoard() {
     lockBoard = false;
 }
 function checkWin() {
-    console.log("matched:", matchedPairs, "total", totalPairs)
-    if (matchedPairs === totalPairs) {
-        if (difficulty === "endless") {
+    console.log("matched:", gameState.matchedPairs, "total", gameState.totalPairs)
+    if (gameState.matchedPairs === gameState.totalPairs) {
+        if (gameState.endlessMode) {
             console.log("endless level completed");
             setTimeout(() => {
-                gridSize+= 2;
-                lives += 20;
-                matchedPairs = 0;
-                totalPairs = (gridSize * gridSize) /2;
-                gameBoard.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
-                const deck = createShuffledDeck(gridSize * gridSize);
+                gameState.firstGuess = true;
+                gameState.gridSize += 2;
+                gameState.lives += 20;
+                gameState.matchedPairs = 0;
+                gameState.totalPairs = (gameState.gridSize * gameState.gridSize) / 2;
+                gameBoard.style.gridTemplateColumns = `repeat(${gameState.gridSize}, 80px)`;
+                const deck = createShuffledDeck(gameState.gridSize * gameState.gridSize);
                 createBoard(deck);
+                setSpecialPairFromDeck(deck);
                 resetBoard();
                 updateLivesDisplay();
             }, 1000)
-        }else {
-        setTimeout(() => {
-            home.classList.add("hidden")
-            game.classList.add("hidden")
-            end.classList.remove("hidden")
-            score = (lives * 100) - (timeElapsed * 2)
-            gameOverText.textContent = "Congratulations, you win!"
-            scoreText.textContent = `You had ${lives} life/lives left! Well done! It only took you ${timeElapsed} seconds to do it, too! Final Score: ${score}`
-            console.log("win");
-        }, 300)
-        if(!endlessMode){
-        clearInterval(timerId);
-        }}}
+        } else {
+            setTimeout(() => {
+                showEndPage()
+                gameState.score = (gameState.lives * 100) - (gameState.timeElapsed * 2)
+                gameOverText.textContent = "Congratulations, you win!"
+                scoreText.textContent = `You had ${gameState.lives} life/lives left! Well done! It only took you ${gameState.timeElapsed} seconds to do it, too! Final Score: ${gameState.score}`
+                console.log("win");
+            }, 300)
+            if (!gameState.endlessMode) {
+                clearInterval(gameState.timerId);
+            }
+        }
+    }
 }
 function checkLose() {
-    if (lives === 0) {
-        if (difficulty === "endless") {
-                   lockBoard = true;
-        home.classList.add("hidden")
-        game.classList.add("hidden")
-        end.classList.remove("hidden")
-        console.log("lose")
-        gameOverText.textContent = "GAME OVER! Endless mode complete."
-        score = endlessMatchedPairs * 5
+    if (gameState.lives === 0) {
+        if (gameState.endlessMode) {
+            lockBoard = true;
+            showEndPage()
 
-        scoreText.textContent = `You attempted endless mode. It took you ${timeElapsed} seconds and your Final Score is: ${score}`
-        clearInterval(timerId); 
+            gameOverText.textContent = "GAME OVER! Endless mode complete."
+            gameState.score = gameState.endlessMatchedPairs * 5
+
+            scoreText.textContent = `You attempted endless mode. It took you ${gameState.timeElapsed} seconds and your Final Score is: ${gameState.score}`
+            clearInterval(gameState.timerId);
         } else {
-        lockBoard = true;
-        home.classList.add("hidden")
-        game.classList.add("hidden")
-        end.classList.remove("hidden")
-        console.log("lose")
-        gameOverText.textContent = "GAME OVER! YOU LOSE."
-        score = (lives * 100) - (timeElapsed * 2) * gridSize
+            lockBoard = true;
+            showEndPage()
+            gameOverText.textContent = "GAME OVER! YOU LOSE."
+            gameState.score = (gameState.lives * 100) - (gameState.timeElapsed * 2) * gameState.gridSize
 
-        scoreText.textContent = `You had one job. You failed. It took you ${timeElapsed} seconds to achieve nothing. Final Score: ${score}`
-        clearInterval(timerId);
-    }}
+            scoreText.textContent = `You had one job. You failed. It took you ${gameState.timeElapsed} seconds to achieve nothing. Final Score: ${gameState.score}`
+            clearInterval(gameState.timerId);
+        }
+    }
 
 }
 function updateLivesDisplay() {
-    livesTextEl.textContent = `Lives left: ${lives}`;
+    livesTextEl.textContent = `Lives left: ${gameState.lives}`;
 }
-function startTimer(){
-    timeElapsed = 0;
+function startTimer() {
     updateTimerDisplay();
 
-    timerId = setInterval(() => {
-        timeElapsed++;
+    gameState.timerId = setInterval(() => {
+        gameState.timeElapsed++;
         updateTimerDisplay();
     }, 1000)
 }
 function updateTimerDisplay() {
-    timerEl.textContent = `Time: ${timeElapsed}s`;
+    timerEl.textContent = `Time: ${gameState.timeElapsed}s`;
+}
+function showHomePage() {
+    home.classList.remove("hidden")
+    game.classList.add("hidden")
+    end.classList.add("hidden")
+}
+function showGamePage() {
+    home.classList.add("hidden")
+    game.classList.remove("hidden")
+    end.classList.add("hidden")
+}
+function showEndPage() {
+    home.classList.add("hidden")
+    game.classList.add("hidden")
+    end.classList.remove("hidden")
+}
+function triggerTimeFreeze() {
+    if (gameState.timerPaused) return;
+
+    gameState.timerPaused = true;
+    clearInterval(gameState.timerId);
+
+    setTimeout(() => {
+        gameState.timerPaused = false;
+        startTimer();
+    }, 5000)
+}
+function setSpecialPairFromDeck(deck) {
+    const pairs = [...new Set(deck)];
+    gameState.specialPair = pairs[Math.floor(Math.random() * pairs.length)];
+
+    specialPairCard.classList.add("flipped");
+    specialPairCard.textContent = gameState.specialPair;
 }

@@ -13,6 +13,7 @@
     <div id="homePage">
         <h1>Welcome to my Concentration game.</h1>
         <h2>Flip the cards over in the least attempts to win!</h2>
+        <h2>Look out for 2 power ups! Get a match on your first go and gain 5 lives! Flip over the randomly selected pair and pause the clock!</h2>
         <label for="difficulty-select" Choose difficulty:></label>
         <select id="difficulty-select">
             <option value="easy">Easy</option>
@@ -24,6 +25,10 @@
     </div>
 
     <div id="gamePage" class="hidden">
+       <div id="specialPairDisplay"> 
+        <h1>Special Pair</h1>
+        <div id="specialPairCard" class="card"></div>
+        </div>
         <div id="game-board"></div>
         <div id="game-info">
         <div id="lives"> Lives: 0</div>
